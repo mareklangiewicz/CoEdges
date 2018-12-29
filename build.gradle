@@ -22,6 +22,7 @@ repositories {
 
 dependencies {
     implementation(Deps.kotlinStdlib8)
+    implementation(Deps.kotlinxCoroutinesCore)
     testImplementation(Deps.junit)
     testImplementation("com.github.langara:USpek:really-micro-SNAPSHOT")
 }
