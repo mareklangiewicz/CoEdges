@@ -1,11 +1,16 @@
 package pl.mareklangiewicz.coedges
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.mareklangiewicz.uspek.USpekRunner
+import pl.mareklangiewicz.uspek.eq
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspek
 
@@ -23,12 +28,12 @@ class LaunchTest {
                     done += "ended"
                 }
                 delay(10)
-                "started" o { assert("started" in done) }
-                "only started" o { assert(done.size == 1) }
+                "started" o { done has "started" }
+                "only started" o { done hasNot "ended" }
                 delay(480)
-                "only started after 490ms" o { assert(done.size == 1) }
+                "only started after 490ms" o { done hasNot "ended" }
                 delay(10)
-                "ended after 500ms" o { assert("ended" in done) }
+                "ended after 500ms" o { done has "ended" }
             }
         }
 
@@ -41,21 +46,39 @@ class LaunchTest {
                         delay(50)
                     }
                 }
-                "not started yet" o { assert(done.isEmpty()) }
+                "not started yet" o { done.size eq 0 }
                 delay(1)
-                "started first iteration" o { assert("iteration 1" in done) }
-                "did not start second iteration" o { assert("iteration 2" !in done) }
+                "started first iteration" o { done has "iteration 1" }
+                "did not start second iteration" o { done hasNot "iteration 2" }
                 delay(190)
                 "started 4 iterations" o {
-                    assert("iteration 4" in done)
-                    assert("iteration 5" !in done)
+                    done has "iteration 4"
+                    done hasNot "iteration 5"
                 }
                 job.cancel()
                 delay(300)
-                "did not start fifth iteration" o {
-                    assert("iteration 5" !in done)
+                "did not start fifth iteration" o { done hasNot "iteration 5" }
+            }
+        }
+
+        "On withTimeout" o {
+            runBlocking {
+                val done = mutableSetOf<String>()
+                try {
+                    withTimeout(250) {
+                        repeat(10) {
+                            done += "iteration ${it + 1}"
+                            delay(50)
+                        }
+                    }
+                    fail("Not cancelled")
                 }
+                catch (e: CancellationException) { done.size eq 5 }
             }
         }
     }
 }
+
+infix fun <T> Collection<T>.has(element: T) { assertTrue("Does not have $element", element in this) }
+
+infix fun <T> Collection<T>.hasNot(element: T) { assertTrue("Does have $element", element !in this) }
