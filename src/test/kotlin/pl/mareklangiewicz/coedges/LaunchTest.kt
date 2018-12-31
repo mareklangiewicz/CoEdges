@@ -5,7 +5,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,7 +77,3 @@ class LaunchTest {
         }
     }
 }
-
-infix fun <T> Collection<T>.has(element: T) { assertTrue("Does not have $element", element in this) }
-
-infix fun <T> Collection<T>.hasNot(element: T) { assertTrue("Does have $element", element !in this) }
