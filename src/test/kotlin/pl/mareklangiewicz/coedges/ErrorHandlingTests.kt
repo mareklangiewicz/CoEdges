@@ -26,6 +26,8 @@ class ErrorHandlingTests {
             val job = GlobalScope.async(Unconfined + handler) {
                 done += "async started".tee
                 throw RuntimeException("some error".tee)
+                @Suppress("UNREACHABLE_CODE")
+                666
             }
             job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
             // also notice that this "job" is actually a Deferred<Nothing>
@@ -33,7 +35,19 @@ class ErrorHandlingTests {
             "async was started" o { done has "async started" }
             "async job is cancelled" o { job.isCancelled eq true }
             "exception was NOT handled" o { done hasNot { "handled" in it } }
+
+            "On try job.await" o {
+                try {
+                    @Suppress("BlockingMethodInNonBlockingContext")
+                    runBlocking { job.await() }
+                }
+                catch (e: RuntimeException) {
+                    done += "catched $e".tee
+                }
+                "exception was thrown" o { done has { Regex("catched.*RuntimeException.*some error") in it } }
+            }
         } }
+
 
         "On GlobalScope.launch with exception handler" o { runBlocking {
             val job = GlobalScope.launch(Unconfined + handler) {
