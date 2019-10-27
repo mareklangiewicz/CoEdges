@@ -14,7 +14,7 @@ import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspek
 
 @RunWith(USpekRunner::class)
-class LaunchTest {
+class LaunchTests {
 
     @Test
     fun uspek() = uspek {

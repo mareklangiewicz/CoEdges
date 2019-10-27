@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package pl.mareklangiewicz.coedges
 
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +13,7 @@ import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspek
 
 @RunWith(USpekRunner::class)
-class PlaygroundTest {
+class PlaygroundTests {
 
     @Test
     fun sample1() = uspek {
@@ -19,16 +21,16 @@ class PlaygroundTest {
         "On different dispatchers" o {
             runBlocking {
                 launch { // context of the parent, main runBlocking coroutine
-                    println("main runBlocking      : I'm working in thread ${Thread.currentThread().name}")
+                    "main runBlocking".tee
                 }
                 launch(Dispatchers.Unconfined) { // not confined -- will work with main thread
-                    println("Unconfined            : I'm working in thread ${Thread.currentThread().name}")
+                    "Unconfined".tee
                 }
                 launch(Dispatchers.Default) { // will get dispatched to DefaultDispatcher
-                    println("Default               : I'm working in thread ${Thread.currentThread().name}")
+                    "Default".tee
                 }
                 launch(newSingleThreadContext("MyOwnThread")) { // will get its own new thread
-                    println("newSingleThreadContext: I'm working in thread ${Thread.currentThread().name}")
+                    "newSingleThreadContext".tee
                 }
             }
         }
