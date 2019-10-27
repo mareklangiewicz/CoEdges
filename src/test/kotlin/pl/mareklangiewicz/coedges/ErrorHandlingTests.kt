@@ -1,6 +1,7 @@
 package pl.mareklangiewicz.coedges
 
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -37,11 +38,9 @@ class ErrorHandlingTests {
         } }
 
         "On GlobalScope.async fail with exception handler" o { runBlocking {
-            val job = GlobalScope.async(Unconfined + handler) {
+            val job: Deferred<Unit> = GlobalScope.async(Unconfined + handler) {
                 done += "async started".tee
                 throw RuntimeException("some error".tee)
-                @Suppress("UNREACHABLE_CODE")
-                666
             }
             job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
 
@@ -75,6 +74,24 @@ class ErrorHandlingTests {
             "inner launch was started" o { done has "inner launch started" }
             "outer launch job is cancelled" o { jobOuter.isCancelled eq true }
             "inner launch job is cancelled" o { jobInner!!.isCancelled eq true }
+            "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
+        } }
+
+        // Tests below show that changing inner launch to async doesn't change error propagation!!
+        "On nested async fail in GlobalScope" o { runBlocking {
+            var jobInner: Job? = null
+            val jobOuter = GlobalScope.launch(Unconfined + handler) {
+                done += "outer launch started".tee
+                jobInner = async {
+                    done += "inner async started".tee
+                    throw RuntimeException("some error".tee)
+                }
+            }
+            jobOuter.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
+            "outer launch was started" o { done has "outer launch started" }
+            "inner async was started" o { done has "inner async started" }
+            "outer launch job is cancelled" o { jobOuter.isCancelled eq true }
+            "inner async job is cancelled" o { jobInner!!.isCancelled eq true }
             "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
         } }
     }
