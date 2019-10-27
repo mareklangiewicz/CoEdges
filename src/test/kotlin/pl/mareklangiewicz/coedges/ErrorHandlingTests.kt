@@ -3,6 +3,7 @@ package pl.mareklangiewicz.coedges
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -22,7 +23,20 @@ class ErrorHandlingTests {
         val done = mutableSetOf<String>()
         val handler = CoroutineExceptionHandler { _, ex -> done += "handled $ex".tee }
 
-        "On GlobalScope.async with exception handler" o { runBlocking {
+
+        "On GlobalScope.launch fail with exception handler" o { runBlocking {
+            val job = GlobalScope.launch(Unconfined + handler) {
+                done += "launch started".tee
+                throw RuntimeException("some error".tee)
+            }
+            job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
+
+            "launch was started" o { done has "launch started" }
+            "launch job is cancelled" o { job.isCancelled eq true }
+            "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
+        } }
+
+        "On GlobalScope.async fail with exception handler" o { runBlocking {
             val job = GlobalScope.async(Unconfined + handler) {
                 done += "async started".tee
                 throw RuntimeException("some error".tee)
@@ -30,7 +44,6 @@ class ErrorHandlingTests {
                 666
             }
             job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
-            // also notice that this "job" is actually a Deferred<Nothing>
 
             "async was started" o { done has "async started" }
             "async job is cancelled" o { job.isCancelled eq true }
@@ -48,18 +61,21 @@ class ErrorHandlingTests {
             }
         } }
 
-
-        "On GlobalScope.launch with exception handler" o { runBlocking {
-            val job = GlobalScope.launch(Unconfined + handler) {
-                done += "launch started".tee
-                throw RuntimeException("some error".tee)
+        "On nested launch fail in GlobalScope" o { runBlocking {
+            var jobInner: Job? = null
+            val jobOuter = GlobalScope.launch(Unconfined + handler) {
+                done += "outer launch started".tee
+                jobInner = launch {
+                    done += "inner launch started".tee
+                    throw RuntimeException("some error".tee)
+                }
             }
-            job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
-
-            "launch was started" o { done has "launch started" }
-            "launch job is cancelled" o { job.isCancelled eq true }
+            jobOuter.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
+            "outer launch was started" o { done has "outer launch started" }
+            "inner launch was started" o { done has "inner launch started" }
+            "outer launch job is cancelled" o { jobOuter.isCancelled eq true }
+            "inner launch job is cancelled" o { jobInner!!.isCancelled eq true }
             "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
         } }
-
     }
 }
