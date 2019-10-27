@@ -48,16 +48,9 @@ class ErrorHandlingTests {
             "async job is cancelled" o { job.isCancelled eq true }
             "exception was NOT handled" o { done hasNot { "handled" in it } }
 
-            "On try job.await" o {
-                try {
-                    @Suppress("BlockingMethodInNonBlockingContext")
-                    runBlocking { job.await() }
-                }
-                catch (e: RuntimeException) {
-                    done += "catched $e".tee
-                }
-                "exception was thrown" o { done has { Regex("catched.*RuntimeException.*some error") in it } }
-            }
+            try { job.await() }
+            catch (e: RuntimeException) { done += "catched $e".tee }
+            "await rethrows" o { done has { Regex("catched.*RuntimeException.*some error") in it } }
         } }
 
         "On nested launch fail in GlobalScope" o { runBlocking {
