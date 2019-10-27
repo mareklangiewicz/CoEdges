@@ -5,20 +5,18 @@ buildscript {
     }
 
     dependencies {
-        classpath Deps.kotlinGradlePlugin
+        classpath(Deps.kotlinGradlePlugin)
     }
-}
-
-plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.3.10"
 }
 
 repositories {
     google()
     jcenter()
-    maven { url "https://jitpack.io" }
+    maven { url = uri("https://jitpack.io") }
     mavenCentral()
 }
+
+plugins { kotlin("jvm") version Vers.kotlin }
 
 dependencies {
     implementation(Deps.kotlinStdlib8)
