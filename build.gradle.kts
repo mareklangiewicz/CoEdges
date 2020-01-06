@@ -21,6 +21,8 @@ plugins { kotlin("jvm") version Vers.kotlin }
 dependencies {
     implementation(Deps.kotlinStdlib8)
     implementation(Deps.kotlinxCoroutinesCore)
+    implementation(Deps.kotlinxCoroutinesRx2)
     testImplementation(Deps.junit)
     testImplementation(Deps.uspek)
+    testImplementation(Deps.smokk)
 }
