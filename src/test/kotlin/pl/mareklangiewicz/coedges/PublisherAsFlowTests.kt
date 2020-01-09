@@ -18,7 +18,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-@RunWith(USpekRunner::class)
+//@RunWith(USpekRunner::class) // commented because of the issue with deep nesting (see: USpekRunnerTests.kt)
 class PublisherAsFlowTests {
 
     @Test
@@ -91,7 +91,6 @@ class PublisherAsFlowTests {
                             "emit is cancelled" o { emit.cancellations eq 1 }
                             "source is unsubscribed" o { source.hasSubscribers() eq false }
                         }
-
                     }
 
                     "On source onError before any onNext" o {
