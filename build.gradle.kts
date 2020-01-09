@@ -25,4 +25,5 @@ dependencies {
     testImplementation(Deps.junit)
     testImplementation(Deps.uspek)
     testImplementation(Deps.smokk)
+    testImplementation(kotlin("script-runtime"))
 }
