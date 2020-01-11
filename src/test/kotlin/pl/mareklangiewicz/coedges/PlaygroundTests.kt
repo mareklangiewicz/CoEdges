@@ -6,17 +6,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
-import pl.mareklangiewicz.uspek.USpekRunner
+import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.uspek.o
-import pl.mareklangiewicz.uspek.uspek
+import pl.mareklangiewicz.uspek.uspekTestFactory
 
-@RunWith(USpekRunner::class)
 class PlaygroundTests {
 
-    @Test
-    fun sample1() = uspek {
+    @TestFactory
+    fun sample1() = uspekTestFactory {
 
         "On different dispatchers" o {
             runBlocking {

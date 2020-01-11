@@ -7,22 +7,19 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.smokkx.smokkx
-import pl.mareklangiewicz.uspek.USpekRunner
 import pl.mareklangiewicz.uspek.eq
 import pl.mareklangiewicz.uspek.o
-import pl.mareklangiewicz.uspek.uspek
+import pl.mareklangiewicz.uspek.uspekTestFactory
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-//@RunWith(USpekRunner::class) // commented because of the issue with deep nesting (see: USpekRunnerTests.kt)
 class PublisherAsFlowTests {
 
-    @Test
-    fun uspek() = uspek {
+    @TestFactory
+    fun uspek() = uspekTestFactory {
 
         "On Publisher source" o {
             val source = PublishProcessor.create<String>()

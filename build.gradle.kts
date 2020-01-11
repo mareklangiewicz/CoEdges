@@ -22,7 +22,7 @@ dependencies {
     implementation(Deps.kotlinStdlib8)
     implementation(Deps.kotlinxCoroutinesCore)
     implementation(Deps.kotlinxCoroutinesRx2)
-    testImplementation(Deps.junit)
+    testImplementation(Deps.junit5)
     testImplementation(Deps.uspek)
     testImplementation(Deps.smokk)
     testImplementation(kotlin("script-runtime"))

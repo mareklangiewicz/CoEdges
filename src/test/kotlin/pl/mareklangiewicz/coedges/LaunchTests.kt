@@ -6,18 +6,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.fail
-import org.junit.Test
-import org.junit.runner.RunWith
-import pl.mareklangiewicz.uspek.USpekRunner
+import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.uspek.eq
 import pl.mareklangiewicz.uspek.o
-import pl.mareklangiewicz.uspek.uspek
+import pl.mareklangiewicz.uspek.uspekTestFactory
 
-@RunWith(USpekRunner::class)
 class LaunchTests {
 
-    @Test
-    fun uspek() = uspek {
+    @TestFactory
+    fun uspek() = uspekTestFactory {
         "On launch" o {
             runBlocking {
                 val done = mutableSetOf<String>()

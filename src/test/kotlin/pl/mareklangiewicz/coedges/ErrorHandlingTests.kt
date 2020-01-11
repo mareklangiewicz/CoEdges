@@ -8,19 +8,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
-import pl.mareklangiewicz.uspek.USpekRunner
+import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.uspek.eq
 import pl.mareklangiewicz.uspek.o
-import pl.mareklangiewicz.uspek.uspek
+import pl.mareklangiewicz.uspek.uspekTestFactory
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-@RunWith(USpekRunner::class)
 class ErrorHandlingTests {
 
-    @Test
-    fun uspek() = uspek {
+    @TestFactory
+    fun uspek() = uspekTestFactory {
         val done = mutableSetOf<String>()
         val handler = CoroutineExceptionHandler { _, ex -> done += "handled $ex".tee }
 
