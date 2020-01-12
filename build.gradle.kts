@@ -27,3 +27,7 @@ dependencies {
     testImplementation(Deps.smokk)
     testImplementation(kotlin("script-runtime"))
 }
+
+tasks.test {
+    useJUnitPlatform()
+}

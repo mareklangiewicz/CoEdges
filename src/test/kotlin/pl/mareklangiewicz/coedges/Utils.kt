@@ -1,12 +1,12 @@
 package pl.mareklangiewicz.coedges
 
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import java.util.Locale
 
-infix fun <T> Collection<T>.has(element: T) { assertTrue("Does not have $element", element in this) }
+infix fun <T> Collection<T>.has(element: T) { assertTrue(element in this) { "Does not have $element" } }
 
-infix fun <T> Collection<T>.hasNot(element: T) { assertTrue("Does have $element", element !in this) }
+infix fun <T> Collection<T>.hasNot(element: T) { assertTrue(element !in this) { "Does have $element" } }
 
 infix fun <T> Collection<T>.has(predicate: (T) -> Boolean) { assertTrue(this.any(predicate)) }
 
