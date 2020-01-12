@@ -3,9 +3,9 @@ package pl.mareklangiewicz.coedges
 import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.smokkx.smokkx
@@ -19,7 +19,7 @@ import kotlin.coroutines.resumeWithException
 class PublisherAsFlowTests {
 
     @TestFactory
-    fun uspek() = uspekTestFactory {
+    fun factory() = uspekTestFactory {
 
         "On Publisher source" o {
             val source = PublishProcessor.create<String>()
@@ -32,7 +32,7 @@ class PublisherAsFlowTests {
                 "On collect flow" o {
 
                     val emit = smokkx<String, Unit>(autoCancel = true)
-                    val job = GlobalScope.launch(Dispatchers.Unconfined) {
+                    val job = GlobalScope.async(Dispatchers.Unconfined) {
                         flow.collect(emit::invoke)
                     }
 
@@ -76,9 +76,10 @@ class PublisherAsFlowTests {
                         }
 
                         "On first emit exception" o {
-                            emit.resumeWithException(RuntimeException("first emit failed"))
+                            val ex = RuntimeException("first emit failed")
+                            emit.resumeWithException(ex)
 
-                            "collection is cancelled" o { job.isCancelled eq true }
+                            "collection completes with exception" o { job.getCompletionExceptionOrNull()?.cause eq ex }
                             "source is unsubscribed" o { source.hasSubscribers() eq false }
                         }
 
@@ -91,9 +92,10 @@ class PublisherAsFlowTests {
                     }
 
                     "On source onError before any onNext" o {
-                        source.onError(RuntimeException("source error"))
+                        val ex = RuntimeException("source error")
+                        source.onError(ex)
 
-                        "collection is cancelled" o { job.isCancelled eq true }
+                        "collection completes with exception" o { job.getCompletionExceptionOrNull()?.cause eq ex }
                     }
 
 
