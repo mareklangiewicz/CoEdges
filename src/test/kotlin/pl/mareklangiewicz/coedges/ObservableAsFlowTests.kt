@@ -3,6 +3,7 @@ package pl.mareklangiewicz.coedges
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.Disposables
 import io.reactivex.internal.disposables.DisposableHelper
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,72 @@ class ObservableAsFlowTests {
     @TestFactory
     fun factory() = uspekTestFactory {
 
+        "On fake ObservableSource" o {
+            val observers = mutableListOf<Observer<in String>>()
+            val source = ObservableSource<String> { observers += it }
+
+            "On source asFlow" o {
+                val flow = source.asFlow()
+
+                "no observers yet" o { observers.size eq 0 }
+
+                "On collect flow" o {
+                    val emit = smokkx<String, Unit>(autoCancel = true)
+                    val job = GlobalScope.async(Dispatchers.Unconfined) { flow.collect(emit::invoke) }
+
+                    "source.subscribe was called and we have an observer" o { observers.size eq 1 }
+
+                    "On onSubscribe" o {
+                        val disposable = Disposables.empty()
+                        observers[0].onSubscribe(disposable)
+
+                        "upstream is not disposed yet" o { disposable.isDisposed eq false }
+                        "no emitting yet" o { emit.invocations.size eq 0 }
+
+                        "On onComplete" o {
+                            observers[0].onComplete()
+
+                            "upstream is disposed" o { disposable.isDisposed eq true }
+                            "collection is completed" o { job.isCompleted eq true }
+                            "collection is not cancelled" o { job.isCancelled eq false }
+                        }
+
+                        "On onError" o {
+                            val ex = RuntimeException("upstream error")
+                            observers[0].onError(ex)
+
+                            "upstream is disposed" o { disposable.isDisposed eq true }
+                            "collection completes with exception" o { job.getCompletionExceptionOrNull()?.cause eq ex }
+                        }
+
+                        "On onNext" o {
+                            observers[0].onNext("some item")
+
+                            "item is emitted" o { emit.invocations has "some item" }
+                        }
+
+                        "On cancel collection" o {
+                            job.cancel()
+
+                            "upstream is disposed" o { disposable.isDisposed eq true }
+                        }
+                    }
+                    "On cancel collection before any onSubscribe" o {
+                        job.cancel()
+
+                        "job is cancelled" o { job.isCancelled eq true }
+
+                        "On late onSubscribe" o {
+                            val disposable = Disposables.empty()
+                            observers[0].onSubscribe(disposable)
+
+                            "upstream is disposed immediately" o { disposable.isDisposed eq true }
+                        }
+                    }
+                }
+            }
+        }
+
         "On Subject source" o {
             val source = PublishSubject.create<String>()
 
@@ -54,11 +121,8 @@ class ObservableAsFlowTests {
                 val flow = source.asFlow()
 
                 "On collect flow" o {
-
                     val emit = smokkx<String, Unit>(autoCancel = true)
-                    val job = GlobalScope.async(Dispatchers.Unconfined) {
-                        flow.collect(emit::invoke)
-                    }
+                    val job = GlobalScope.async(Dispatchers.Unconfined) { flow.collect(emit::invoke) }
 
                     "source has observer" o { source.hasObservers() eq true }
                     "no emitting yet" o { emit.invocations.size eq 0 }
