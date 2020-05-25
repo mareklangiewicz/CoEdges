@@ -4,7 +4,6 @@ import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.reactive.asFlow
 import org.junit.jupiter.api.TestFactory
@@ -24,10 +23,8 @@ class PublisherAsFlowTests {
         "On Publisher source" o {
             val source = PublishProcessor.create<String>()
 
-            "On source asFlow with buffer capacity 1" o {
-                val flow = source.asFlow().buffer(1)
-                    // default buffer should be 1 also, but looks like it behaves differently:
-                    // it requests second item from Publisher AFTER emitting first item resumes.
+            "On source asFlow" o {
+                val flow = source.asFlow()
 
                 "On collect flow" o {
 
