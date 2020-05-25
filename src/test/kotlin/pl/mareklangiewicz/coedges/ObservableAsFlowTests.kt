@@ -2,45 +2,22 @@ package pl.mareklangiewicz.coedges
 
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
-import io.reactivex.internal.disposables.DisposableHelper
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.rx2.asFlow
 import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.smokkx.smokkx
 import pl.mareklangiewicz.uspek.eq
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-
-// My Observable.asFlow() experimental implementation copy (PR to kotlinx.coroutines)
-@ExperimentalCoroutinesApi
-public fun <T: Any> ObservableSource<T>.asFlow(): Flow<T> = callbackFlow {
-
-    val disposableRef = AtomicReference<Disposable>()
-
-    val observer = object : Observer<T> {
-        override fun onComplete() { close() }
-        override fun onSubscribe(d: Disposable) { DisposableHelper.setOnce(disposableRef, d) }
-        override fun onNext(t: T) { sendBlocking(t) }
-        override fun onError(e: Throwable) { close(e) }
-    }
-
-    subscribe(observer)
-    awaitClose { DisposableHelper.dispose(disposableRef) }
-}
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 class ObservableAsFlowTests {
