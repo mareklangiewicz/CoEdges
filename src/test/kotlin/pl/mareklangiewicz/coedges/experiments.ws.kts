@@ -47,6 +47,6 @@ suspend fun typicalConcurrency() = coroutineScope {
 
 "****** Experiment 1: channelUsage *****".tee.unit
 runBlocking { channelUsage() }
-"****** Experiment 2: typicaConcurrency *****".tee.unit
+"****** Experiment 2: typicalConcurrency *****".tee.unit
 runBlocking { typicalConcurrency() }
 

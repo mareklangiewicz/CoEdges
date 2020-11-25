@@ -7,6 +7,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestFactory
+import pl.mareklangiewicz.pue.asNPullee
+import pl.mareklangiewicz.pue.iterator
+import pl.mareklangiewicz.pue.vnmap
+import pl.mareklangiewicz.pue.vnzip
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
 
@@ -30,6 +34,19 @@ class PlaygroundTests {
                     "newSingleThreadContext".tee
                 }
             }
+        }
+    }
+
+    @TestFactory
+    fun samplePue() = uspekTestFactory {
+        "On some npullee" o {
+
+            val npullee = (1..10).asNPullee()
+                .vnmap { it * 2 }
+                .vnzip((1..10).asNPullee())
+
+            for (i in npullee)
+                println(i)
         }
     }
 }

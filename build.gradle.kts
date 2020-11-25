@@ -22,6 +22,7 @@ dependencies {
     implementation(Deps.kotlinStdlib8)
     implementation(Deps.kotlinxCoroutinesCore)
     implementation(Deps.kotlinxCoroutinesRx2)
+    implementation("com.github.langara.MyIntent:pue:1.0.10-alpha")
     testImplementation(Deps.junit5)
     testImplementation(Deps.uspek)
     testImplementation(Deps.smokk)
