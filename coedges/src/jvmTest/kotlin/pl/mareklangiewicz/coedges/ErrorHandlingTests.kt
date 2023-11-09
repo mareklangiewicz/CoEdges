@@ -1,18 +1,13 @@
 package pl.mareklangiewicz.coedges
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Unconfined
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.uspek.eq
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
 
+@OptIn(DelicateCoroutinesApi::class)
 @Suppress("EXPERIMENTAL_API_USAGE")
 class ErrorHandlingTests {
 

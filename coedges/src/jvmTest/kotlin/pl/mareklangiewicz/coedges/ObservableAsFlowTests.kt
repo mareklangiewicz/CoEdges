@@ -4,9 +4,7 @@ import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposables
 import io.reactivex.subjects.PublishSubject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.rx2.asFlow
 import org.junit.jupiter.api.TestFactory
@@ -19,6 +17,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 
+@OptIn(DelicateCoroutinesApi::class)
 @Suppress("EXPERIMENTAL_API_USAGE")
 class ObservableAsFlowTests {
 

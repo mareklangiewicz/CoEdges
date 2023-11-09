@@ -1,9 +1,7 @@
 package pl.mareklangiewicz.coedges
 
 import io.reactivex.processors.PublishProcessor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.reactive.asFlow
 import org.junit.jupiter.api.TestFactory
@@ -14,6 +12,7 @@ import pl.mareklangiewicz.uspek.uspekTestFactory
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("EXPERIMENTAL_API_USAGE")
 class PublisherAsFlowTests {
 

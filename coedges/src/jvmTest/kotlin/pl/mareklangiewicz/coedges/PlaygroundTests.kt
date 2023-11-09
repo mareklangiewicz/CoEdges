@@ -7,10 +7,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestFactory
-import pl.mareklangiewicz.pue.asNPullee
-import pl.mareklangiewicz.pue.iterator
-import pl.mareklangiewicz.pue.vnmap
-import pl.mareklangiewicz.pue.vnzip
+import pl.mareklangiewicz.upue.asNPullee
+import pl.mareklangiewicz.upue.iterator
+import pl.mareklangiewicz.upue.vnmap
+import pl.mareklangiewicz.upue.vnzip
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
 

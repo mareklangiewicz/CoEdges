@@ -1,40 +1,79 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import pl.mareklangiewicz.defaults.*
+import pl.mareklangiewicz.deps.*
+import pl.mareklangiewicz.utils.*
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
+plugins {
+    plug(plugs.NexusPublish)
+    plug(plugs.KotlinMulti) apply false
+    plug(plugs.KotlinJvm) apply false
+}
+
+defaultBuildTemplateForRootProject(
+    langaraLibDetails(
+        name = "CoEdges",
+        description = "Kotlin Coroutines Edges.",
+        githubUrl = "https://github.com/langara/CoEdges",
+        version = Ver(0, 0, 6)
+        // https://repo1.maven.org/maven2/pl/mareklangiewicz/coedges/
+        // https://github.com/langara/CoEdges/releases
+    ),
+    withSonatypeOssPublishing = false,
+)
+
+// FIXME: make sure this region below is synced, but not as a part of "self-sync" as it was in DepsKt,
+//   but as normal sync when syncing all regions in all projects.
+//   The "self-sync" should only sync templates (and be renamed to templates-sync or sth)
+
+// region [Root Build Template]
+
+/** Publishing to Sonatype OSSRH has to be explicitly allowed here, by setting withSonatypeOssPublishing to true. */
+fun Project.defaultBuildTemplateForRootProject(
+    libDetails: LibDetails? = null,
+    withSonatypeOssPublishing: Boolean = false
+) {
+    check(libDetails != null || !withSonatypeOssPublishing)
+    ext.addDefaultStuffFromSystemEnvs()
+    libDetails?.let {
+        rootExtLibDetails = it
+        defaultGroupAndVerAndDescription(it)
+        if (withSonatypeOssPublishing) defaultSonatypeOssNexusPublishing()
     }
 
-    dependencies { classpath(Deps.kotlinGradlePlugin) }
+    // kinda workaround for kinda issue with kotlin native
+    // https://youtrack.jetbrains.com/issue/KT-48410/Sync-failed.-Could-not-determine-the-dependencies-of-task-commonizeNativeDistribution.#focus=Comments-27-5144160.0-0
+    repositories { mavenCentral() }
 }
 
-repositories {
-    google()
-    jcenter()
-    maven { url = uri("https://jitpack.io") }
-    mavenCentral()
+/**
+ * System.getenv() should contain six env variables with given prefix, like:
+ * * MYKOTLIBS_signing_keyId
+ * * MYKOTLIBS_signing_password
+ * * MYKOTLIBS_signing_keyFile (or MYKOTLIBS_signing_key with whole signing key)
+ * * MYKOTLIBS_ossrhUsername
+ * * MYKOTLIBS_ossrhPassword
+ * * MYKOTLIBS_sonatypeStagingProfileId
+ * * First three of these used in fun pl.mareklangiewicz.defaults.defaultSigning
+ * * See DepsKt/template-mpp/template-mpp-lib/build.gradle.kts
+ */
+fun ExtraPropertiesExtension.addDefaultStuffFromSystemEnvs(envKeyMatchPrefix: String = "MYKOTLIBS_") =
+    addAllFromSystemEnvs(envKeyMatchPrefix)
+
+fun Project.defaultSonatypeOssNexusPublishing(
+    sonatypeStagingProfileId: String = rootExtString["sonatypeStagingProfileId"],
+    ossrhUsername: String = rootExtString["ossrhUsername"],
+    ossrhPassword: String = rootExtString["ossrhPassword"],
+) {
+    nexusPublishing {
+        this.repositories {
+            sonatype {  // only for users registered in Sonatype after 24 Feb 2021
+                stagingProfileId put sonatypeStagingProfileId
+                username put ossrhUsername
+                password put ossrhPassword
+                nexusUrl put repos.sonatypeOssNexus
+                snapshotRepositoryUrl put repos.sonatypeOssSnapshots
+            }
+        }
+    }
 }
 
-plugins { kotlin("jvm") version Vers.kotlin }
-
-dependencies {
-    implementation(Deps.kotlinStdlib8)
-    implementation(Deps.kotlinxCoroutinesCore)
-    implementation(Deps.kotlinxCoroutinesRx2)
-    implementation("com.github.langara.MyIntent:pue:1.0.10-alpha")
-    testImplementation(Deps.junit5)
-    testImplementation(Deps.uspek)
-    testImplementation(Deps.smokk)
-    testImplementation(kotlin("script-runtime"))
-}
-
-tasks.test { useJUnitPlatform() }
-
-val compileKotlin: KotlinCompile by tasks
-
-compileKotlin.kotlinOptions { jvmTarget = "1.8" }
-
-val compileTestKotlin: KotlinCompile by tasks
-
-compileTestKotlin.kotlinOptions { jvmTarget = "1.8" }
+// endregion [Root Build Template]
