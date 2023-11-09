@@ -2,10 +2,7 @@
 
 package pl.mareklangiewicz.coedges
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.upue.asNPullee
 import pl.mareklangiewicz.upue.iterator
@@ -14,6 +11,7 @@ import pl.mareklangiewicz.upue.vnzip
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
 
+@OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
 class PlaygroundTests {
 
     @TestFactory
