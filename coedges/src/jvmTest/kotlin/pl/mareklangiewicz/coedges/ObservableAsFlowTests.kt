@@ -1,12 +1,10 @@
 package pl.mareklangiewicz.coedges
 
-import io.reactivex.ObservableSource
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposables
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.disposables.*
+import io.reactivex.rxjava3.subjects.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.rx2.asFlow
+import kotlinx.coroutines.rx3.*
 import org.junit.jupiter.api.TestFactory
 import pl.mareklangiewicz.smokkx.smokkx
 import pl.mareklangiewicz.uspek.eq
@@ -17,7 +15,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 
-@OptIn(DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 @Suppress("EXPERIMENTAL_API_USAGE")
 class ObservableAsFlowTests {
 
@@ -40,7 +38,7 @@ class ObservableAsFlowTests {
                     "source.subscribe was called and we have an observer" o { observers.size eq 1 }
 
                     "On onSubscribe" o {
-                        val disposable = Disposables.empty()
+                        val disposable = Disposable.empty()
                         observers[0].onSubscribe(disposable)
 
                         "upstream is not disposed yet" o { disposable.isDisposed eq false }
@@ -80,7 +78,7 @@ class ObservableAsFlowTests {
                         "job is cancelled" o { job.isCancelled eq true }
 
                         "On late onSubscribe" o {
-                            val disposable = Disposables.empty()
+                            val disposable = Disposable.empty()
                             observers[0].onSubscribe(disposable)
 
                             "upstream is disposed immediately" o { disposable.isDisposed eq true }

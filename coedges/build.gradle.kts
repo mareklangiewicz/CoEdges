@@ -18,7 +18,7 @@ defaultBuildTemplateForMppLib(
     api(Langiewicz.smokkx)
     api(KotlinX.datetime)
     api(KotlinX.coroutines_core)
-    api(KotlinX.coroutines_rx2)
+    api(KotlinX.coroutines_rx3)
 }
 
 // region [Kotlin Module Build Template]
