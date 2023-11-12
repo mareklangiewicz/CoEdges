@@ -9,7 +9,6 @@ plugins {
 }
 
 defaultBuildTemplateForMppLib(
-    withJs = false,
     // TODO_later: withNativeLinux64 = true,
 ) {
     api(Langiewicz.abcdk)
@@ -18,7 +17,16 @@ defaultBuildTemplateForMppLib(
     api(Langiewicz.smokkx)
     api(KotlinX.datetime)
     api(KotlinX.coroutines_core)
-    api(KotlinX.coroutines_rx3)
+}
+
+kotlin {
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {
+                api(KotlinX.coroutines_rx3)
+            }
+        }
+    }
 }
 
 // region [Kotlin Module Build Template]
