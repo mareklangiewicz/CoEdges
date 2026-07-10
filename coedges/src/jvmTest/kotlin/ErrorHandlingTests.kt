@@ -3,7 +3,7 @@ package pl.mareklangiewicz.coedges
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Unconfined
 import org.junit.jupiter.api.TestFactory
-import pl.mareklangiewicz.uspek.eq
+import pl.mareklangiewicz.bad.*
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
 
@@ -25,7 +25,7 @@ class ErrorHandlingTests {
             job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
 
             "launch was started" o { done has "launch started" }
-            "launch job is cancelled" o { job.isCancelled eq true }
+            "launch job is cancelled" o { job.isCancelled chkEq true }
             "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
         } }
 
@@ -37,7 +37,7 @@ class ErrorHandlingTests {
             job.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
 
             "async was started" o { done has "async started" }
-            "async job is cancelled" o { job.isCancelled eq true }
+            "async job is cancelled" o { job.isCancelled chkEq true }
             "exception was NOT handled" o { done hasNot { "handled" in it } }
 
             try { job.await() }
@@ -57,8 +57,8 @@ class ErrorHandlingTests {
             jobOuter.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
             "outer launch was started" o { done has "outer launch started" }
             "inner launch was started" o { done has "inner launch started" }
-            "outer launch job is cancelled" o { jobOuter.isCancelled eq true }
-            "inner launch job is cancelled" o { jobInner!!.isCancelled eq true }
+            "outer launch job is cancelled" o { jobOuter.isCancelled chkEq true }
+            "inner launch job is cancelled" o { jobInner!!.isCancelled chkEq true }
             "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
         } }
 
@@ -75,8 +75,8 @@ class ErrorHandlingTests {
             jobOuter.join() // not necessary because we use Unconfined (but notice it does not rethrow RuntimeException)
             "outer launch was started" o { done has "outer launch started" }
             "inner async was started" o { done has "inner async started" }
-            "outer launch job is cancelled" o { jobOuter.isCancelled eq true }
-            "inner async job is cancelled" o { jobInner!!.isCancelled eq true }
+            "outer launch job is cancelled" o { jobOuter.isCancelled chkEq true }
+            "inner async job is cancelled" o { jobInner!!.isCancelled chkEq true }
             "exception was handled" o { done has { Regex("handled.*RuntimeException.*some error") in it } }
         } }
     }

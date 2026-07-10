@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.fail
-import pl.mareklangiewicz.uspek.eq
+import pl.mareklangiewicz.bad.chkEq
 import pl.mareklangiewicz.uspek.o
 import pl.mareklangiewicz.uspek.uspekTestFactory
 
@@ -23,6 +23,7 @@ class LaunchTests {
                     delay(500)
                     done += "ended"
                 }
+                "started" o { done hasNot "started" }
                 delay(10)
                 "started" o { done has "started" }
                 "only started" o { done hasNot "ended" }
@@ -42,7 +43,7 @@ class LaunchTests {
                         delay(50)
                     }
                 }
-                "not started yet" o { done.size eq 0 }
+                "not started yet" o { done.size chkEq 0 }
                 delay(1)
                 "started first iteration" o { done has "iteration 1" }
                 "did not start second iteration" o { done hasNot "iteration 2" }
@@ -69,7 +70,7 @@ class LaunchTests {
                     }
                     fail("Not cancelled")
                 }
-                catch (e: CancellationException) { done.size eq 5 }
+                catch (e: CancellationException) { done.size chkEq 5 }
             }
         }
     }
