@@ -19,6 +19,3 @@ val now get() = System.currentTimeMillis().let { String.format(Locale.US, "%tT:%
  */
 @Suppress("unused")
 val <T> T.tee get() = also { println("tee [${Thread.currentThread().name.padEnd(40).substring(0, 40)}] [$now] $it") }
-
-@Suppress("unused")
-val Any?.unit get() = Unit
