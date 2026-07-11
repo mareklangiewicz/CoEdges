@@ -27,7 +27,7 @@ kotlin {
   sourceSets {
     commonTest {
       dependencies {
-        api(KotlinX.coroutines_test)
+        implementation(KotlinX.coroutines_test)
       }
     }
     jvmMain {
@@ -254,7 +254,7 @@ fun KotlinMultiplatformExtension.jsDefault(
   testWithChrome: Boolean = true,
   testHeadless: Boolean = true,
 ) {
-  js(IR) {
+  js {
     if (withBrowser) browser {
       testTask {
         useKarma {
