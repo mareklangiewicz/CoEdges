@@ -17,5 +17,4 @@ val now get() = System.currentTimeMillis().let { String.format(Locale.US, "%tT:%
 /**
  * Logs given data to console with additional info and returns the same data (kinda like the tee unix command)
  */
-@Suppress("unused")
 val <T> T.tee get() = also { println("tee [${Thread.currentThread().name.padEnd(40).substring(0, 40)}] [$now] $it") }

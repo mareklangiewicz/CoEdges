@@ -1,9 +1,8 @@
-
 // region [[Basic MPP Lib Build Imports and Plugs]]
 
+import com.vanniktech.maven.publish.*
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
-import com.vanniktech.maven.publish.*
 import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.utils.*
@@ -16,27 +15,27 @@ plugins {
 
 defaultBuildTemplateForBasicMppLib() {
   api(Langiewicz.kground)
-    api(Langiewicz.abcdk)
-    api(Langiewicz.tuplek)
-    api(Langiewicz.upue)
-    api(Langiewicz.smokkx)
-    api(KotlinX.datetime)
-    api(KotlinX.coroutines_core)
+  api(Langiewicz.abcdk)
+  api(Langiewicz.tuplek)
+  api(Langiewicz.upue)
+  api(Langiewicz.smokkx)
+  api(KotlinX.datetime)
+  api(KotlinX.coroutines_core)
 }
 
 kotlin {
-    sourceSets {
-        val commonTest by getting {
-            dependencies {
-                api(KotlinX.coroutines_test)
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                api(KotlinX.coroutines_rx3)
-            }
-        }
+  sourceSets {
+    commonTest {
+      dependencies {
+        api(KotlinX.coroutines_test)
+      }
     }
+    jvmMain {
+      dependencies {
+        api(KotlinX.coroutines_rx3)
+      }
+    }
+  }
 }
 
 // region [[Kotlin Module Build Template]]
@@ -59,7 +58,7 @@ fun Project.setMyWeirdSubstitutions(
           .using(
             // Note: there are different fun in gradle: Project.project; DependencySubstitution.project
             if (foundLocalProjects[projName] != null) project(":$projName")
-            else module("$myProjectsGroup:$projName:$projVer")
+            else module("$myProjectsGroup:$projName:$projVer"),
           )
     }
   }
@@ -211,20 +210,20 @@ fun KotlinMultiplatformExtension.allDefault(
   }
   withJvmVer?.let { jvmToolchain(it.toInt()) } // works for jvm and android
   sourceSets {
-    val commonMain by getting {
+    commonMain {
       dependencies {
         if (withKotlinxHtml) implementation(KotlinX.html)
         addCommonMainDependencies()
       }
     }
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(Kotlin.test)
         if (withTestUSpekX) implementation(Langiewicz.uspekx)
       }
     }
     if (withJvm) {
-      val jvmTest by getting {
+      jvmTest {
         dependencies {
           if (withTestJUnit4) implementation(JUnit.junit)
           if (withTestJUnit5) {
@@ -242,8 +241,8 @@ fun KotlinMultiplatformExtension.allDefault(
       }
     }
     if (withLinuxX64) {
-      val linuxX64Main by getting
-      val linuxX64Test by getting
+      linuxX64Main
+      linuxX64Test
     }
   }
 }
