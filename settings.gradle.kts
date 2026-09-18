@@ -1,3 +1,7 @@
+@file:Suppress("UnstableApiUsage")
+
+import pl.mareklangiewicz.deps.*
+import pl.mareklangiewicz.utils.extLib
 
 rootProject.name = "CoEdges"
 
@@ -32,8 +36,8 @@ pluginManagement {
 }
 
 plugins {
-  id("pl.mareklangiewicz.deps.settings") version "0.4.22" // https://plugins.gradle.org/search?term=mareklangiewicz
-  id("com.gradle.develocity") version "4.5.0" // https://docs.gradle.com/develocity/gradle-plugin/
+  id("pl.mareklangiewicz.deps.settings") version "0.4.63" // https://plugins.gradle.org/search?term=mareklangiewicz
+  id("com.gradle.develocity") version "4.5.1" // https://docs.gradle.com/develocity/gradle-plugin/
 }
 
 develocity {
@@ -45,5 +49,28 @@ develocity {
 }
 
 // endregion [[My Settings Stuff]]
+
+val enableJs = true
+val enableNative = true
+
+gradle.extLib = lib(
+  info = myLibInfo(
+    name = "CoEdges",
+    description = "Kotlin Coroutines Edges.",
+    githubUrl = "https://github.com/langara/CoEdges",
+    version = Ver(0, 0, 7),
+    // https://central.sonatype.com/artifact/pl.mareklangiewicz/coedges
+    // https://github.com/mareklangiewicz/CoEdges/releases
+  ),
+  flags = LibFlags(
+    withJs = enableJs,
+    withLinuxX64 = enableNative,
+    // withCentralPublish is GONE from LibFlags as of DepsKt 0.4.63. Publish intent is a per-MODULE
+    // value now, so :coedges opts in with LibPublish(toCentral = true) in its own build script.
+    // See DepsKt/docs/design/publish-intent-per-module.md.
+  ),
+  withCompose = false, // was: compose = null
+  // andro is absent by default
+)
 
 include(":coedges")

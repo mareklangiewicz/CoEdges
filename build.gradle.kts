@@ -1,43 +1,23 @@
+
 // region [[Basic Root Build Imports and Plugs]]
 
 import pl.mareklangiewicz.defaults.*
-import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.utils.*
+import pl.mareklangiewicz.deps.*
+import pl.mareklangiewicz.templatefun.*
 
 plugins {
+  plug(plugs.TemplateFun) apply false
   plug(plugs.KotlinMulti) apply false
   plug(plugs.KotlinJvm) apply false
+
+  // Resolve the publish plugin ONCE here, with its version. Without this the only source of
+  // it is the templatefun plugin's own classpath (templatefun depends on it), which Gradle sees as
+  // "unknown version" -- and then a versioned request in a subproject cannot be checked
+  // against it.
+  plug(plugs.VannikPublish) apply false
 }
 
 // endregion [[Basic Root Build Imports and Plugs]]
 
-val enableJs = true
-val enableNative = true
-
-defaultBuildTemplateForRootProject(
-  myLibDetails(
-    name = "CoEdges",
-    description = "Kotlin Coroutines Edges.",
-    githubUrl = "https://github.com/langara/CoEdges",
-    version = Ver(0, 0, 7),
-    // https://central.sonatype.com/artifact/pl.mareklangiewicz/coedges
-    // https://github.com/mareklangiewicz/CoEdges/releases
-    settings = LibSettings(
-      withJs = enableJs,
-      withLinuxX64 = enableNative,
-      compose = null,
-      withCentralPublish = true,
-    ),
-  ),
-)
-
-// region [[Root Build Template]]
-
-fun Project.defaultBuildTemplateForRootProject(details: LibDetails? = null) {
-  details?.let {
-    rootExtLibDetails = it
-    defaultGroupAndVerAndDescription(it)
-  }
-}
-
-// endregion [[Root Build Template]]
+defaultGroupAndVerAndDescription(gradle.extLib)
